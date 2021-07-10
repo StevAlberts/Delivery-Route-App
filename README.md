@@ -4,7 +4,7 @@ A new Flutter Load and Go Coding Challenge.
 
 ## Getting Started
 
-**Problem 1: Sorting & Filtering**
+##Problem 1: Sorting & Filtering**
 
 Design a screen displaying a list of dummy orders and name it ‘All Orders’.
 
@@ -16,7 +16,7 @@ This screen should be interactive, e.g. Mobile user touches any one of the order
 
 Dummy data has been provided in the email attachments.
 
-**Q1. Simple Sort**
+##Q1. Simple Sort**
 
 Design a dropdown sorting widget for your ’All Orders’ screen, with sorting criterias of:
 
@@ -30,7 +30,7 @@ Design a dropdown sorting widget for your ’All Orders’ screen, with sorting 
 
 Be sure to differentiate between Pickup Date and Delivery Date when sorting.
 
-**Q2. Filter**
+##Q2. Filter**
 
 Design a button in ‘All Orders’ screen to perform Filtering.
 
@@ -48,7 +48,7 @@ Upon clicking, filter conditions should be selectable as follows:
 
 Your filter has to be able to supporting filtering through more than 1 of the aforementioned conditions. E.g. Merchant Name = Merchant 1, Pickup Date = ‘1/1/2021’, Area Code = ‘05’
 
-**Problem 2: Search & Edit**
+##Problem 2: Search & Edit**
 
 Design a search button in the appbar, conveniently allowing the user to search through ‘All Orders’ screen with the following:
 
@@ -60,7 +60,7 @@ Design a search button in the appbar, conveniently allowing the user to search t
 
 Allow all rows in ‘All Orders’ to be selectable.
 
-**Q2. Edit**
+##Q2. Edit**
 
 Upon selection of multiple rows, allow user to:
 
@@ -76,7 +76,7 @@ Upon selection of multiple rows, allow user to:
 
 3. Delete row
 
-**Problem 3: APIs**
+##Problem 3: APIs**
 
 Create a ‘My Deliveries’ screen with the same format as ‘All Orders’ screen.
 
