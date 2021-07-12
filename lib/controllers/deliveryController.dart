@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -9,13 +8,11 @@ import 'package:load_n_go/models/deliveryModel.dart';
 import 'ordersController.dart';
 
 class DeliveryController extends GetxController {
-  OrdersController _ordersController =
-      Get.put(OrdersController(), permanent: true);
-  // dio http package
-  Dio _dio = Dio();
+  OrdersController _ordersController = Get.put(OrdersController());
+
   RxBool loading = false.obs;
 
-  Rx<List<Map<String, dynamic>>> _deliveriesMap =
+  Rx<List<Map<String, dynamic>>> _deliveriesJobsMap =
       Rx<List<Map<String, dynamic>>>([]);
 
   Rx<List<DeliveryModel>> routedDeliveries = Rx<List<DeliveryModel>>([]);
@@ -29,26 +26,26 @@ class DeliveryController extends GetxController {
     },
   ];
 
-  // routedData
-  List routes = [];
-
   @override
   void onInit() {
     super.onInit();
-    _convertToCords();
+    Future.delayed(Duration(seconds: 1), () {
+      // wait for 1 sec to convert postal codes to coordinates
+      _convertPostalCodesToCoordinates();
+    });
   }
 
-  // fetchRoutes
-  void fetchRoutes()
-      // => _convertToCords()
-      //     .then((_)
-      =>
-      _optimizeRoutes(_deliveriesMap.value, _vehicles);
+  // fetch routes form API
+  void fetchRoutes() => _optimizeRoutesAPI(_deliveriesJobsMap.value, _vehicles);
 
   // fetch data using optimization (OpenRoute Service API)
-  Future<void> _optimizeRoutes(List<Map<String, dynamic>> jobs,
-      List<Map<String, dynamic>> vehicles) async {
+  Future<void> _optimizeRoutesAPI(
+    List<Map<String, dynamic>> jobs,
+    List<Map<String, dynamic>> vehicles,
+  ) async {
     loading.value = true;
+    update();
+    // API headers
     var header = {
       'Accept':
           'application/json,application/geo+json,application/gpx+xml,img/png;charset=utf-8',
@@ -56,6 +53,7 @@ class DeliveryController extends GetxController {
           '5b3ce3597851110001cf6248ab578be051cc4340b08f463ccead05af',
       'Content-Type': 'application/json;charset=utf-8',
     };
+    // API body
     var body = json.encode({
       "jobs": jobs.toList(),
       "vehicles": [
@@ -70,32 +68,26 @@ class DeliveryController extends GetxController {
         }
       ],
     });
+
+    // requesting access to api
     try {
       var url = Uri.parse('https://api.openrouteservice.org/optimization');
       var response = await http.post(url, headers: header, body: body);
-      print('Response status: ${response.statusCode}');
-      // print('Response body: ${response.body}');
       if (response.statusCode == 200) {
+        // If the server did return a 200 OK response, then parse the JSON.
         Map<String, dynamic> data = jsonDecode(response.body);
-        // If the server did return a 200 OK response,
-        // then parse the JSON.
-        print(data['routes']);
+        // convert the data to a list of routes
         List routes = data['routes'];
-        print("Routes: ${routes.length}");
+        // iterate through the routes to get the steps optimized
         routes.forEach((element) {
           List steps = element['steps'];
-          print("Steps: ${steps.length}");
+          // iterate through the steps to get the jobs for each vehicle
           steps.forEach((_steps) {
             if (_steps['type'] == 'job') {
-              print("----------------------------------");
-              print(_steps);
-              print("----------------------------------");
-              _deliveriesMap.value.forEach((_delivery) {
-                if (_delivery['id'] == _steps['id']) {
-                  print("hit");
+              // iterate through the jobs to get the _delivery optimized by id
+              _deliveriesJobsMap.value.forEach((_delivery) {
+                if (_delivery['id'] == _steps['id'])
                   routedDeliveries.value.add(DeliveryModel.fromJson(_delivery));
-                }
-                print(routedDeliveries.value.length);
               });
             }
           });
@@ -113,9 +105,10 @@ class DeliveryController extends GetxController {
     update();
   }
 
-  // convert Postalcodes to Cordinates
-  // Future<List<Map<String, dynamic>>>
-  _convertToCords() async {
+  // convert Postalcodes to Coordinates
+  _convertPostalCodesToCoordinates() async {
+    loading.value = true;
+    update();
     // iterate through all orders deliveryPostalCode
     int index = 0;
     _ordersController.allOrders.forEach((element) async {
@@ -144,9 +137,14 @@ class DeliveryController extends GetxController {
             locations.first.latitude
           ], // [long,lat]
         );
-        _deliveriesMap.value.add(_delivery.toJSON());
+        // add to delivery jobs map for optimization
+        _deliveriesJobsMap.value.add(_delivery.toJSON());
       } catch (e) {
         print("Error: $e");
+      }
+      if (index++ >= _ordersController.allOrders.length - 1) {
+        loading.value = false;
+        update();
       }
     });
   }

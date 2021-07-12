@@ -1,16 +1,20 @@
+import 'dart:io';
+
 import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:intl/intl.dart';
 import 'package:load_n_go/models/orderModel.dart';
+import 'package:path_provider/path_provider.dart';
 
 class OrdersController extends GetxController {
   List<OrderModel> allOrders = [];
   List<OrderModel> searchData = [];
   List<OrderModel> searchedOrders = [];
   List<OrderModel> selectedOrders = [];
-
+  List<dynamic> csvHeaders = [];
   RxBool loading = false.obs;
 
   @override
@@ -22,11 +26,18 @@ class OrdersController extends GetxController {
   // read CSV file from assets/lng_data.csv
   void readCSVOrders() async {
     loading.value = true;
+    update();
     final lngData = await rootBundle.loadString("assets/lng_data.csv");
     List<List<dynamic>> _listData = const CsvToListConverter().convert(lngData);
     allOrders =
         _listData.skip(2).map((data) => OrderModel.fromCSV(data)).toList();
     searchData = allOrders;
+    csvHeaders.add(_listData
+        .take(2)
+        .last
+        .toString()
+        .replaceAll('[', "")
+        .replaceAll(']', ""));
     loading.value = false;
     update();
   }
@@ -226,5 +237,32 @@ class OrdersController extends GetxController {
     allOrders.removeWhere((element) => element.orderNo == _order.orderNo);
     loading.value = false;
     update();
+  }
+
+  // export selected orders to csv
+  Future<void> exportToCSV() async {
+    List<List<dynamic>?>? rows = [];
+    print(selectedOrders.length);
+    rows.add(csvHeaders);
+    selectedOrders.forEach((element) {
+      print([element.toCSVString()][0]);
+      rows.add(element.toCSVString());
+    });
+    String csv = '${const ListToCsvConverter().convert(rows)}';
+    print(csv);
+    final directory = await getApplicationDocumentsDirectory();
+    final pathOfTheFileToWrite = directory.path + "/myCsvFile.csv";
+    File file = File(pathOfTheFileToWrite);
+    print(file.path);
+    file.writeAsString(
+        csv.replaceAll('"', "").replaceAll('[', "").replaceAll(']', ""));
+    selectedOrders.clear();
+    update();
+    Get.showSnackbar(GetBar(
+      title: "Exported to",
+      message: "${file.path}",
+      mainButton: TextButton(onPressed: () => Get.back(), child: Text("OK")),
+      duration: Duration(seconds: 3),
+    ));
   }
 }

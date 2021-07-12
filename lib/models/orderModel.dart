@@ -90,4 +90,28 @@ class OrderModel {
       approvalStatus: json['approvalStatus'] ?? "",
     );
   }
+
+  toCSVString() {
+    return [
+      orderNo,
+      orderDesc,
+      orderWeight,
+      qty,
+      pickupDate,
+      pickupAddress1,
+      pickupAddress2,
+      pickupPostalCode,
+      deliveryDate,
+      deliveryAddress1,
+      deliveryAddress2,
+      deliveryPostalCode,
+      custFirstName,
+      custLastName,
+      custEmail,
+      custPhoneNo,
+      custCompany,
+      merchantName,
+      approvalStatus,
+    ];
+  }
 }

@@ -47,74 +47,59 @@ class _MyDeliveriesViewState extends State<MyDeliveriesView> {
               },
             ),
             body: snapshot.routedDeliveries.value.length > 0
-                ? Column(
-                    children: [
-                      Expanded(
-                        child: ListView.separated(
-                          itemCount: snapshot.routedDeliveries.value.length,
-                          separatorBuilder: (context, index) => Divider(),
-                          itemBuilder: (context, index) {
-                            DeliveryModel _delivery =
-                                snapshot.routedDeliveries.value[index];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.green.withOpacity(0.2),
-                                foregroundColor: Colors.black,
-                                child: Container(
-                                  child: _ordersController.selectedOrders
-                                          .contains(_delivery)
-                                      ? Icon(
-                                          Icons.check_circle,
-                                          color: Colors.green,
-                                          size: 30,
-                                        )
-                                      : Text(
-                                          "${_delivery.custFirstName.split(" ")[0][0]}${_delivery.custFirstName.split(" ")[1]}",
-                                        ),
-                                ),
-                              ),
-                              title: Text(_delivery.custFirstName),
-                              subtitle: Text(_delivery.orderNo),
-                              trailing: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "${DateFormat.yMd().format(DateTime.parse(_delivery.deliveryDate))}",
+                ? ListView.separated(
+                    itemCount: snapshot.routedDeliveries.value.length,
+                    separatorBuilder: (context, index) => Divider(),
+                    itemBuilder: (context, index) {
+                      DeliveryModel _delivery =
+                          snapshot.routedDeliveries.value[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.green.withOpacity(0.2),
+                          foregroundColor: Colors.black,
+                          child: Container(
+                            child: _ordersController.selectedOrders
+                                    .contains(_delivery)
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 30,
+                                  )
+                                : Text(
+                                    "${_delivery.custFirstName.split(" ")[0][0]}${_delivery.custFirstName.split(" ")[1]}",
                                   ),
-                                  Text(
-                                    "Delivery",
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                ],
-                              ),
-                              selected: _ordersController.selectedOrders
-                                      .contains(_delivery)
-                                  ? true
-                                  : false,
-                              selectedTileColor: Colors.green.withOpacity(0.1),
-                              onLongPress: () {
-                                // if (_ordersController.selectedOrders
-                                //     .contains(_delivery)) {
-                                //   _ordersController.unSelect(_delivery);
-                                // } else {
-                                //   _ordersController.multiSelect(_delivery);
-                                // }
-                              },
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => OrderDescriptionView(
-                                      order: OrderModel.fromJson(
-                                          _delivery.toJSON())),
-                                ),
-                              ),
-                            );
-                          },
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 50),
-                    ],
+                        title: Text(_delivery.custFirstName),
+                        subtitle: Text(_delivery.orderNo),
+                        trailing: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${DateFormat.yMd().format(DateTime.parse(_delivery.deliveryDate))}",
+                            ),
+                            Text(
+                              "Delivery",
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ],
+                        ),
+                        selected:
+                            _ordersController.selectedOrders.contains(_delivery)
+                                ? true
+                                : false,
+                        selectedTileColor: Colors.green.withOpacity(0.1),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => OrderDescriptionView(
+                              order: OrderModel.fromJson(_delivery.toJSON()),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   )
                 : snapshot.loading.isFalse
                     ? Center(
@@ -135,7 +120,7 @@ class _MyDeliveriesViewState extends State<MyDeliveriesView> {
                           ],
                         ),
                       )
-                    : CircularProgressIndicator(),
+                    : Center(child: CircularProgressIndicator()),
           );
         });
   }

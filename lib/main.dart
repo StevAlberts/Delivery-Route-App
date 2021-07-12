@@ -14,18 +14,15 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'LnG',
+      title: 'Load n GO',
       theme: ThemeData(
         primarySwatch: Colors.green,
         accentColor: Colors.greenAccent,
-        // brightness: Brightness.dark,
       ),
       home: AppView(),
-      // home: MyHomePage(),
     );
   }
 }
@@ -39,18 +36,12 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     AllOrdersView(),
-    MyDeliveriesView(),
+    MyDeliveriesView()
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  void _onItemTapped(int index) => setState(() => _selectedIndex = index);
 
   @override
   Widget build(BuildContext context) {

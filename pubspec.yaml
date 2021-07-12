@@ -34,8 +34,9 @@ dependencies:
   material_floating_search_bar: ^0.3.4
   implicitly_animated_list: ^2.1.0
   geocoding: ^2.0.0
-  dio: ^4.0.0
   http: ^0.13.3
+  path_provider: ^2.0.2
+  permission_handler: ^8.1.2
 
 dev_dependencies:
   flutter_test:

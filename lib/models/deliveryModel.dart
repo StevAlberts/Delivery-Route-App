@@ -13,6 +13,7 @@ class DeliveryModel {
   String deliveryAddress1;
   String? deliveryAddress2;
   int deliveryPostalCode;
+  // cust for Customer
   String custFirstName;
   String custLastName;
   String custEmail;
@@ -57,19 +58,19 @@ class DeliveryModel {
       qty: json['qty'],
       pickupDate: json['pickupDate'],
       pickupAddress1: json['pickupAddress1'],
-      pickupAddress2: json['pickupAddress2'] ?? "",
+      pickupAddress2: json['pickupAddress2'] ?? "---",
       pickupPostalCode: json['pickupPostalCode'],
       deliveryDate: json['deliveryDate'],
       deliveryAddress1: json['deliveryAddress1'],
-      deliveryAddress2: json['deliveryAddress2'] ?? "",
+      deliveryAddress2: json['deliveryAddress2'] ?? "---",
       deliveryPostalCode: json['deliveryPostalCode'],
       custFirstName: json['custFirstName'],
       custLastName: json['custLastName'],
       custEmail: json['custEmail'],
       custPhoneNo: json['custPhoneNo'],
-      custCompany: json['custCompany'],
+      custCompany: json['custCompany'] ?? "---",
       merchantName: json['merchantName'],
-      approvalStatus: json['approvalStatus'] ?? "",
+      approvalStatus: json['approvalStatus'] ?? "---",
       location: json['location'],
     );
   }

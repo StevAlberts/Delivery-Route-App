@@ -75,10 +75,7 @@ class OrderDescriptionView extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.all(2.0),
                             child: Text(
-                              // order.approvalStatus!.isNotEmpty
-                              //     ?
                               "${order.approvalStatus}",
-                              // : "---",
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           )

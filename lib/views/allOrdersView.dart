@@ -1,4 +1,3 @@
-import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
@@ -112,7 +111,10 @@ class _AllOrdersViewState extends State<AllOrdersView> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                  leading: new Icon(Icons.delete_forever),
+                  leading: new Icon(
+                    Icons.delete_forever,
+                    color: Colors.red,
+                  ),
                   title: new Text('Delete all selected'),
                   onTap: () {
                     _ordersController.deletedAllSelectedRows();
@@ -120,7 +122,10 @@ class _AllOrdersViewState extends State<AllOrdersView> {
                   },
                 ),
                 ListTile(
-                  leading: new Icon(Icons.task),
+                  leading: new Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                  ),
                   title: new Text('Approval all selected (YES)'),
                   onTap: () {
                     _ordersController.approveAllSelectedRows();
@@ -128,14 +133,14 @@ class _AllOrdersViewState extends State<AllOrdersView> {
                   },
                 ),
                 ListTile(
-                  leading: new Icon(Icons.file_download),
+                  leading: new Icon(
+                    Icons.file_download,
+                    color: Colors.blue,
+                  ),
                   title: new Text('Export all selected'),
                   onTap: () {
-                    // Navigator.pop(context);
-                    List<List<dynamic>?>? rows =
-                        _ordersController.selectedOrders.cast<List>();
-                    String csv = const ListToCsvConverter().convert(rows);
-                    print(csv);
+                    _ordersController.exportToCSV();
+                    Navigator.pop(context);
                   },
                 ),
                 ListTile(
@@ -284,7 +289,7 @@ class _AllOrdersViewState extends State<AllOrdersView> {
               ? Expanded(
                   child: ListView.separated(
                     itemCount: orders.length,
-                    separatorBuilder: (context, index) => Divider(),
+                    separatorBuilder: (context, index) => Divider(height: 1),
                     itemBuilder: (context, index) {
                       OrderModel order = orders[index];
                       return ListTile(
@@ -297,7 +302,7 @@ class _AllOrdersViewState extends State<AllOrdersView> {
                                     ? Icon(
                                         Icons.check_circle,
                                         color: Colors.green,
-                                        size: 30,
+                                        size: 40,
                                       )
                                     : Text(
                                         "${order.custFirstName.split(" ")[0][0]}${order.custFirstName.split(" ")[1]}",
@@ -359,13 +364,22 @@ class _AllOrdersViewState extends State<AllOrdersView> {
                             _ordersController.multiSelect(order);
                           }
                         },
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OrderDescriptionView(order: order),
-                          ),
-                        ),
+                        onTap: _ordersController.selectedOrders.length > 0
+                            ? () {
+                                if (_ordersController.selectedOrders
+                                    .contains(order)) {
+                                  _ordersController.unSelect(order);
+                                } else {
+                                  _ordersController.multiSelect(order);
+                                }
+                              }
+                            : () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        OrderDescriptionView(order: order),
+                                  ),
+                                ),
                       );
                     },
                   ),
@@ -441,7 +455,7 @@ class _AllOrdersViewState extends State<AllOrdersView> {
             );
           },
         ),
-        Divider(),
+        Divider(height: 1),
       ],
     );
   }
